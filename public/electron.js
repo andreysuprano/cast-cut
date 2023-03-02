@@ -2,8 +2,29 @@ const path = require('path');
 const fs = require('fs');
 const { app, BrowserWindow, ipcMain } = require('electron');
 const isDev = require('electron-is-dev');
+const trimVideo = require('./ffmpeg-wrapper');
+const express = require('express');
+const http = require('http');
 
-require('./ipcFunctions');
+const expressServer = express();
+//Express Server -> WebSocket
+const server = http.createServer(expressServer);
+const sio = require('socket.io')(server, {
+	cors: {
+		origin: 'http://localhost:3000'
+	}
+});
+
+//const io = new Server(server);
+
+server.listen(4001);
+
+sio.on('connection', (socket) => {
+	console.log('conectou');
+	socket.on('video-status', (data) => {
+		console.log(data);
+	});
+});
 
 function createWindow() {
 	// Create the browser window.
@@ -50,6 +71,10 @@ app.on('activate', () => {
 	}
 });
 
-ipcMain.on('teste', (event, args) => {
-	console.log(args);
+ipcMain.on('video', (event, data) => {
+	data.cortes.forEach((corte, index) => {
+		trimVideo(event, corte.start, corte.end, data.videoPath, index).catch((err) => {
+			event.reply('Error - Not start proccess.');
+		});
+	});
 });

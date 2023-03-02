@@ -3,7 +3,7 @@ import PlayIcon from '../assets/icons/play.svg';
 import { useContext, useRef, useState } from 'react';
 import { AppContext } from '../context/appContext';
 
-export const ButtonsVideoController = ({ setVideoPath }) => {
+export const ButtonsVideoController = ({ setVideoPath, generateCuts }) => {
 	const [ video, setVideo ] = useState();
 	const inputRef = useRef();
 	const context = useContext(AppContext);
@@ -14,6 +14,9 @@ export const ButtonsVideoController = ({ setVideoPath }) => {
 		context.setPath(file.path);
 	};
 
+	const handleGenerateCuts = () => {
+		generateCuts();
+	};
 	return (
 		<div className="video-buttons">
 			{video && <p className="video-path">{video}</p>}
@@ -37,7 +40,7 @@ export const ButtonsVideoController = ({ setVideoPath }) => {
 				Pasta de Cortes
 			</button> */}
 
-			<button className="video-button">
+			<button className="video-button" onClick={handleGenerateCuts}>
 				<img src={PlayIcon} className="button-icon" alt="" />
 				Gerar Cortes
 			</button>

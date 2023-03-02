@@ -3,11 +3,24 @@ import { ButtonsVideoController } from '../components/ButtonIcon';
 import { Header } from '../components/Header';
 import { CutTable } from '../components/CutTable';
 import { CutSetTime } from '../components/CutSetTime';
+import socketIOClient from 'socket.io-client';
+const ENDPOINT = 'http://127.0.0.1:4001';
 
 const Home = () => {
 	const [ cortes, setCortes ] = useState([]);
 	const [ videoPath, setVideoPath ] = useState('');
 	const [ object, setObject ] = useState({});
+	const io = socketIOClient(ENDPOINT);
+
+	const teste = {
+		teste: 'agora vai caraioo',
+		ENDPOINT
+	};
+
+	io.on('connection', (socket) => {
+		console.log('Conectou');
+		socket.emit('video-status', teste);
+	});
 
 	useEffect(
 		() => {
@@ -15,7 +28,6 @@ const Home = () => {
 				cortes,
 				videoPath
 			});
-			console.log(object);
 		},
 		[ cortes, videoPath ]
 	);
@@ -37,7 +49,7 @@ const Home = () => {
 	};
 
 	function handleButtonClick() {
-		window.api.test('Bora caraio');
+		window.api.electron(object);
 	}
 
 	return (
@@ -57,7 +69,7 @@ const Home = () => {
 			<Header />
 			<div className="content">
 				<div className="container">
-					<ButtonsVideoController setVideoPath={handleVideoPath} />
+					<ButtonsVideoController setVideoPath={handleVideoPath} generateCuts={handleButtonClick} />
 					<CutSetTime addCortes={handleCorte} />
 				</div>
 			</div>
